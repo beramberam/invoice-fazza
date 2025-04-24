@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice Form Fazza</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 750px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+    }
+    h2 {
+      text-align: center;
+      color: #555;
+    }
+    label {
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      background-color: #e7b46b;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #d9a552;
+    }
+    img {
+      width: 120px;
+      display: block;
+      margin: 0 auto 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/480px-No_image_available.svg.png" alt="Logo Fazza.Seserahan" id="logo" />
+
+    <h2>Invoice Form Fazza.Seserahan</h2>
+
+    <label>Nama Pemesan
+      <input type="text" id="nama" />
+    </label>
+
+    <label>Tanggal Acara
+      <input type="date" id="tanggal" />
+    </label>
+
+    <label>Nomor HP
+      <input type="text" id="nomorHp" />
+    </label>
+
+    <label>Estimasi Tray (tuliskan per baris, misalnya: XL: handuk couple✅)
+      <textarea id="tray"></textarea>
+    </label>
+
+    <label>Tema Bunga
+      <input type="text" id="tema" />
+    </label>
+
+    <label>Alas
+      <input type="text" id="alas" />
+    </label>
+
+    <label>Acrylic
+      <input type="text" id="acrylic" />
+    </label>
+
+    <label>Detail Biaya (misal: 6 Tray Premium White Gold = 480.000)
+      <textarea id="biaya"></textarea>
+    </label>
+
+    <label>Total (Rp)
+      <input type="text" id="total" />
+    </label>
+
+    <label>Deposit Masuk
+      <input type="text" id="deposit" />
+    </label>
+
+    <button onclick="generatePDF()">Download PDF Invoice</button>
+  </div>
+
+  <script>
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const namaPemesan = document.getElementById("nama").value || "invoice-fazza";
+
+      // Border
+      doc.setDrawColor(150);
+      doc.setLineWidth(0.5);
+      doc.rect(10, 10, 190, 277);
+
+      // Header
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("FAZZA.SESERAHAN", 15, 20);
+
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.text("Nama Pemesan: " + namaPemesan, 15, 30);
+      doc.text("Tanggal Acara: " + document.getElementById("tanggal").value, 15, 38);
+      doc.text("Nomor HP: " + document.getElementById("nomorHp").value, 15, 46);
+
+      doc.setFontSize(11);
+      doc.text("Estimasi Tray:", 15, 56);
+
+      const trayLines = doc.splitTextToSize(document.getElementById("tray").value, 180);
+      doc.text(trayLines, 15, 64);
+      let y = 64 + trayLines.length * 8;
+
+      doc.text("Tema Bunga: " + document.getElementById("tema").value, 15, y); y += 8;
+      doc.text("Alas: " + document.getElementById("alas").value, 15, y); y += 8;
+      doc.text("Acrylic: " + document.getElementById("acrylic").value, 15, y); y += 10;
+
+      doc.text("Detail Biaya:", 15, y);
+      y += 8;
+      const biayaLines = doc.splitTextToSize(document.getElementById("biaya").value, 180);
+      doc.text(biayaLines, 15, y);
+      y += biayaLines.length * 8;
+
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text("Total: Rp " + document.getElementById("total").value, 15, y); y += 8;
+      doc.text("Deposit: Rp " + document.getElementById("deposit").value, 15, y); y += 12;
+
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const note = "* Deposit tidak memotong dari total keseluruhan. Deposit akan dikembalikan pada saat Pengembalian Box Seserahan.";
+      const noteLines = doc.splitTextToSize(note, 180);
+      doc.text(noteLines, 15, y);
+
+      doc.save(namaPemesan.replace(/\s+/g, "_").toLowerCase() + "_invoice.pdf");
+    }
+  </script>
+</body>
+</html>
